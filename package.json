@@ -1,0 +1,9 @@
+{
+  "name": "rocket3d-calculadora",
+  "private": true,
+  "scripts": {
+    "sass": "sass scss/main.scss style.css --style=expanded --no-source-map",
+    "sass:watch": "sass scss/main.scss style.css --style=expanded --no-source-map --watch"
+  },
+  "devDependencies": { "sass": "^1.80.0" }
+}

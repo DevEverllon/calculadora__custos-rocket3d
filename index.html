@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Precificação - Rocket 3D Maker</title>
+    <meta name="description" content="Calcule o custo e o preço de venda de peças de impressão 3D." />
+    <meta property="og:title" content="Calculadora de Precificação - Rocket 3D Maker" />
+    <meta property="og:description" content="Calcule o custo e o preço de venda de peças de impressão 3D." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Rocket 3D Maker">
+        <img class="brand-logo" src="img/logo-rocket3d.png" alt="" width="45" height="36" />
+        <span>Rocket 3D Maker</span>
+      </a>
+      <button type="button" id="tema" class="icon-btn" aria-label="Alternar tema claro/escuro">
+        <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <main class="container">
+      <section class="section-container">
+        <h1 class="section-title">Calculadora de Precificação</h1>
+
+        <!-- CONFIGURAÇÕES -->
+        <details class="settings">
+          <summary><i class="fa-solid fa-gear" aria-hidden="true"></i> Configurações de custo</summary>
+          <div class="settings-grid">
+            <label class="field">Filamento (R$/kg)
+              <input class="input" type="number" min="0" step="any" data-cfg="precoKg" />
+            </label>
+            <label class="field">Energia (R$/kWh)
+              <input class="input" type="number" min="0" step="any" data-cfg="precoKwh" />
+            </label>
+            <label class="field">Consumo da impressora (W)
+              <input class="input" type="number" min="0" step="any" data-cfg="consumoWatts" />
+            </label>
+            <label class="field">Depreciação (R$/h)
+              <input class="input" type="number" min="0" step="any" data-cfg="depreciacaoHora" />
+            </label>
+            <label class="field">Mão de obra (R$/h)
+              <input class="input" type="number" min="0" step="any" data-cfg="maoObraHora" />
+            </label>
+            <label class="field">Taxa de falha (%)
+              <input class="input" type="number" min="0" step="any" data-cfg="falhaPct" />
+            </label>
+            <label class="field">Taxa de venda (%) <small>marketplace, cartão, impostos</small>
+              <input class="input" type="number" min="0" step="any" data-cfg="taxaVendaPct" />
+            </label>
+          </div>
+          <button type="button" id="restaurar" class="btn-link">Restaurar valores padrão</button>
+        </details>
+
+        <!-- FORMULÁRIO -->
+        <form id="form-calculo" novalidate>
+          <div class="container-inputs">
+            <div class="input-group">
+              <label for="nome" class="form-label">Nome da peça (opcional)</label>
+              <input id="nome" type="text" class="input" placeholder="Chaveiro Rocket" maxlength="60" />
+              <span class="input-helper"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="material" class="form-label">Material</label>
+              <select id="material" class="input"></select>
+              <span class="input-helper"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="peso" class="form-label">Peso da peça (g)</label>
+              <input id="peso" type="number" class="input" placeholder="5" min="0" step="any" inputmode="decimal" />
+              <span id="erro-peso" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="tempoH" class="form-label">Tempo de impressão</label>
+              <div class="row">
+                <input id="tempoH" type="number" class="input" placeholder="0 h" min="0" step="1" inputmode="numeric" aria-label="Horas" />
+                <input id="tempoM" type="number" class="input" placeholder="30 min" min="0" step="any" inputmode="decimal" aria-label="Minutos" />
+              </div>
+              <span id="erro-tempo" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="qtd" class="form-label">Quantidade de peças</label>
+              <input id="qtd" type="number" class="input" value="1" min="1" step="1" inputmode="numeric" />
+              <span id="erro-qtd" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="pos" class="form-label">Pós-processamento (min/peça)</label>
+              <input id="pos" type="number" class="input" placeholder="0" min="0" step="any" inputmode="decimal" />
+              <span id="erro-pos" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="adicional" class="form-label">Valor adicional (R$/peça)</label>
+              <input id="adicional" type="number" class="input" placeholder="0.38" min="0" step="any" inputmode="decimal" />
+              <span id="erro-adicional" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="frete" class="form-label">Frete / embalagem (R$ no total)</label>
+              <input id="frete" type="number" class="input" placeholder="0" min="0" step="any" inputmode="decimal" />
+              <span id="erro-frete" class="input-helper" aria-live="polite"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="margem" class="form-label">Margem personalizada (%)</label>
+              <input id="margem" type="number" class="input" placeholder="80" min="0" step="any" inputmode="decimal" />
+              <span id="erro-margem" class="input-helper" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div class="container-button">
+              <button class="button" type="submit">Calcular <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+            </div>
+            <button type="button" id="limpar" class="btn-secondary">Limpar</button>
+          </div>
+        </form>
+
+        <hr class="hr" />
+
+        <!-- RESULTADO -->
+        <div class="result-container" aria-live="polite"></div>
+
+        <!-- HISTÓRICO -->
+        <section class="historico" aria-labelledby="titulo-historico">
+          <div class="historico-head">
+            <h2 id="titulo-historico">Histórico</h2>
+            <button type="button" id="limpar-historico" class="btn-link">Limpar histórico</button>
+          </div>
+          <p id="historico-vazio" class="muted">Nenhum cálculo salvo ainda.</p>
+          <ul id="lista-historico"></ul>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>© 2026 Rocket - Impressão 3D. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <div id="toasts" class="toast-container" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
